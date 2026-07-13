@@ -36,8 +36,17 @@ export default {
   },
 
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(safeRun(() => main(env, 'renew')));
-  }
+  ctx.waitUntil(safeRun(async () => {
+    // 自动续期
+    await main(env, 'renew');
+
+    // 等待10秒
+    await delay(10000);
+
+    // 自动重启
+    await main(env, 'restart');
+  }));
+}
 };
 
 async function safeRun(fn) {
